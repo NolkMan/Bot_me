@@ -9,4 +9,9 @@ include_directories(inc)
 
 file(GLOB SOURCES "src/*.cpp")
 
+find_package(Threads)
+find_package( Boost 1.62 COMPONENTS system REQUIRED )
+
 add_executable(botMe ${SOURCES})
+target_link_libraries( botMe ${CMAKE_THREAD_LIBS_INIT} )
+target_link_libraries( botMe LINK_PUBLIC ${Boost_LIBRARIES} )

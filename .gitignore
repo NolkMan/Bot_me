@@ -1,6 +1,7 @@
 # CPP #
 #######
 
+
 # Prerequisites
 *.d
 
@@ -30,6 +31,7 @@
 *.lib
 
 # Executables
+botMe
 *.exe
 *.out
 *.app

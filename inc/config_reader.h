@@ -1,3 +1,6 @@
+#ifndef __BOTME_INC_CONFIG_READER_H
+#define __BOTME_INC_CONFIG_READER_H
+
 #include <string>
 
 namespace config {
@@ -9,4 +12,4 @@ namespace config {
 	Config readConfig(std::string);
 }
 
-
+#endif
