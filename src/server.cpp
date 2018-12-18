@@ -52,7 +52,6 @@ void Server::startConnection(tcp::socket sock){
 	}
 
 	std::cout << "Client disconnected\n";
-	
 }
 
 void Server::setCommunicationManager(CommunicationManager *cm){
