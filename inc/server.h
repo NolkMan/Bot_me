@@ -1,28 +1,31 @@
-#ifndef __BOTME_SRC_SERVER_H
-#define __BOTME_SRC_SERVER_H
+#ifndef __BOTME_INC_SERVER_H
+#define __BOTME_INC_SERVER_H
 
 #include "boost/asio.hpp"
 #include "boost/bind.hpp"
 
+#include "CommunicationManager.h"
+
 class Server{
 	boost::asio::io_service io_service;
-	boost::asio::ip::udp::udp::socket socket;
-
-	boost::asio::ip::udp::udp::endpoint sender_endpoint_;
+	boost::asio::ip::tcp::tcp::acceptor acceptor;
 	
 	static const int max_length = 1024;
-	char data_[max_length];
 
-	int port;
+	unsigned short port;
+
+	CommunicationManager *commManager;
+
+	void startConnection(boost::asio::ip::tcp::tcp::socket);
 
 public:
 	Server(int port);
 
 	void run();
 
-	void handle_receive_from(const boost::system::error_code &error, 
-		size_t bytes_recvd);
-	void handle_send_to(const boost::system::error_code& , size_t );
+	void setCommunicationManager(CommunicationManager*);
+
+	void send( std::string, boost::asio::ip::tcp::tcp::endpoint);
 };
 
 #endif

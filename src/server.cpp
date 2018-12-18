@@ -1,49 +1,68 @@
 #include "server.h"
 
 #include <iostream>
+#include <thread>
+#include <chrono>
 
-using boost::asio::ip::udp;
+using boost::asio::ip::tcp;
 
-Server::Server(int port):port(port),socket(io_service, udp::endpoint(udp::v4(), port)){
-	socket.async_receive_from(
-			boost::asio::buffer(data_, max_length), sender_endpoint_,
-		   	boost::bind(&Server::handle_receive_from, this,
-				boost::asio::placeholders::error,
-				boost::asio::placeholders::bytes_transferred));
+Server::Server(int port):port(port),acceptor(io_service, tcp::endpoint(tcp::v4(), port)){
+}
+
+void Server::startConnection(tcp::socket sock){
+	int cid = commManager->createNewClient();
+	try{
+		char data[max_length];
+		boost::asio::streambuf b;
+		std::istream stream(&b);
+
+		for (;;){
+			boost::system::error_code error;
+
+			// used to receive messages from the client
+			if (sock.available()){
+				boost::asio::read_until(sock, b, '\n');
+				if (error == boost::asio::error::eof){ // client disconnected
+					break;
+				}else if(error){ // other error
+					throw boost::system::system_error(error);
+				}else{
+					std::string message;
+					std::getline(stream, message);
+					commManager->addMessage(message, cid);
+				}
+			}
+
+			//used to send messages to the client
+			if (commManager->isResponse(cid)){
+				try{
+					std::string resp = commManager->getResponse(cid);
+					boost::asio::write(sock, boost::asio::buffer(resp));
+					commManager->popResponse(cid);
+				}catch(std::exception& e){
+					std::cerr << "Error while sending a message: " << e.what() << "\n";
+				}
+			}
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(30));
+		}
+
+	}catch (std::exception& e){
+		std::cerr << "Exception while communicating with client " << e.what() << "\n";
+	}
+
+	std::cout << "Client disconnected\n";
+	
+}
+
+void Server::setCommunicationManager(CommunicationManager *cm){
+	commManager = cm;
 }
 
 void Server::run(){
-	io_service.run();
+	for(;;){
+		tcp::socket sock(io_service);
+		acceptor.accept(sock);
+		std::thread(&Server::startConnection, this, std::move(sock)).detach();
+	}
 }
-
-void Server::handle_receive_from(
-		const boost::system::error_code &error, 
-		size_t bytes_recvd){
-	if (!error && bytes_recvd > 0)
-    {
-      socket.async_send_to(
-          boost::asio::buffer(data_, bytes_recvd), sender_endpoint_,
-          boost::bind(&Server::handle_send_to, this,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
-    }
-    else
-    {
-      socket.async_receive_from(
-          boost::asio::buffer(data_, max_length), sender_endpoint_,
-          boost::bind(&Server::handle_receive_from, this,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
-    }
-  }
-
-
-void Server::handle_send_to(const boost::system::error_code& /*error*/,
-      size_t /*bytes_sent*/){
-	socket.async_receive_from(
-		boost::asio::buffer(data_, max_length), sender_endpoint_,
-		boost::bind(&Server::handle_receive_from, this,
-			boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred));
-}
-
