@@ -13,7 +13,7 @@ public:
 	struct PlayerData{
 		std::string uname;
 		std::string passwd;
-		int pid;
+		unsigned int pid;
 		PlayerData(std::string un="", std::string ps="", int p=-1):uname(un),passwd(ps),pid(p){}
 	};
 

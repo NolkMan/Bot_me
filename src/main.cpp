@@ -17,21 +17,17 @@ int main(int args, char ** argv){
 
 	auto config = config::readConfig ( configFile );
 
-	Game *game = new TestGame(config);
 	auto *comm = new CommunicationManager();
 
+	Game *game = new TestGame(config);
 	game->setCommunicationManager(comm);
 
-	try{
-		auto server = Server(3200);
-		server.setCommunicationManager(comm);
+	auto server = Server(3200);
+	server.setCommunicationManager(comm);
 
-		std::thread(&Server::run, &server).detach();
+	std::thread(&Server::run, &server).detach();
 		
-		game->start();
-	}catch( std::exception& e){
-		std::cerr << e.what() << "\n";
-	}
+	game->start();
 	
 
 	delete game;

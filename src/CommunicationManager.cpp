@@ -35,8 +35,9 @@ void CommunicationManager::addMessage(std::string text, int cid){
 				c.pid = pd.pid;
 				c.registered = true;
 				c.responses.push("Registered!\n");
-			}catch(std::exception &e){
-				std::cerr << "[LOGIN]" << e.what();
+				std::cout << "cid:" << c.cid << ":registered as:" << c.uname << ":" << c.pid << "\n";
+			}catch(...){
+				std::cerr << "[FAILED LOGIN] User: " << c.uname << "\n";
 			}
 		}
 	}else{

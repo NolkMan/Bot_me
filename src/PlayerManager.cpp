@@ -18,7 +18,15 @@ void PlayerManager::addUser(std::string uname, std::string passwd){
 		std::cerr << "User with that name already exists\n";
 		return;
 	}
-	unsigned int pid = rng();
+	unsigned int pid;
+	bool isIn = true;
+	while (isIn) { 
+		isIn = false; 
+		pid = rng();
+		for( const auto& [k , pd] : userHashes)
+			if (pd.pid == pid) isIn = true;
+	}
+
 	userHashes[uname] = PlayerData(uname, passwd, pid);
 	writeUsers();
 }
@@ -29,11 +37,10 @@ PlayerManager::PlayerData PlayerManager::tryLogin(std::string uname, std::string
 		throw InvalidUserOrPassword();
 	}
 	if (userHashes[uname].passwd == passwd){
-		std::cout << "User with login: " << uname << " just logged in\n";
 		return userHashes[uname];
 	}
 
-	std::cout << "User with login: " << uname << " failed to log in\n";
+	std::cerr << "User with login: " << uname << " failed to log in\n";
 	throw InvalidUserOrPassword();
 }
 
