@@ -3,6 +3,7 @@
 
 #include "server.h"
 #include "config_reader.h"
+#include "ConsoleReader.h"
 
 #include "Game.h"
 #include "TestGame.h"
@@ -25,7 +26,10 @@ int main(int args, char ** argv){
 	auto server = Server(3200);
 	server.setCommunicationManager(comm);
 
+	auto consoleReader = ConsoleReader();
+
 	std::thread(&Server::run, &server).detach();
+	std::thread(&ConsoleReader::run, &consoleReader).detach();
 		
 	game->start();
 	
