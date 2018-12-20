@@ -18,26 +18,24 @@ int main(int args, char ** argv){
 	auto config = config::readConfig ( configFile );
 
 	Game *game = new TestGame(config);
-	auto comm = new CommunicationManager();
+	auto *comm = new CommunicationManager();
 
 	game->setCommunicationManager(comm);
 
 	try{
 		auto server = Server(3200);
-
 		server.setCommunicationManager(comm);
 
 		std::thread(&Server::run, &server).detach();
-
+		
 		game->start();
-
 	}catch( std::exception& e){
 		std::cerr << e.what() << "\n";
 	}
-
-	std::cout << config.mapSizeX << " " << config.mapSizeY << "\n";
+	
 
 	delete game;
+	delete comm;
 
 	return 0;
 }

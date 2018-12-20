@@ -21,20 +21,21 @@ void Server::startConnection(tcp::socket sock){
 
 			// used to receive messages from the client
 			if (sock.available()){
-				boost::asio::read_until(sock, b, '\n');
+				boost::asio::read_until(sock, b, '\n', error);
+
 				if (error == boost::asio::error::eof){ // client disconnected
 					break;
 				}else if(error){ // other error
 					throw boost::system::system_error(error);
 				}else{
 					std::string message;
-					std::getline(stream, message);
-					commManager->addMessage(message, cid);
+					while(std::getline(stream, message))
+						commManager->addMessage(message, cid);
 				}
 			}
 
 			//used to send messages to the client
-			if (commManager->isResponse(cid)){
+			while (commManager->isResponse(cid)){
 				try{
 					std::string resp = commManager->getResponse(cid);
 					boost::asio::write(sock, boost::asio::buffer(resp));

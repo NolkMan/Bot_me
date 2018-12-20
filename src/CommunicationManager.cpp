@@ -30,10 +30,13 @@ void CommunicationManager::addMessage(std::string text, int cid){
 			c.uname = text;
 			c.responses.push("Enter password:\n");
 		}else{
-			if (PlayerManager::get().tryLogin(c.uname , text)){
-				c.pid = 1;
+			try{
+				auto pd = PlayerManager::get().tryLogin(c.uname, text);
+				c.pid = pd.pid;
 				c.registered = true;
 				c.responses.push("Registered!\n");
+			}catch(std::exception &e){
+				std::cerr << "[LOGIN]" << e.what();
 			}
 		}
 	}else{

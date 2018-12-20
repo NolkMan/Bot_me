@@ -13,11 +13,11 @@ struct message{
 };
 
 struct client{
+	int pid;
+	std::string uname;
 	bool registered;
 	bool playing;
-	int pid;
 	int cid;
-	std::string uname;
 	std::queue<std::string> messages;
 	std::queue<std::string> responses;
 };
