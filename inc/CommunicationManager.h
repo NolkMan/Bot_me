@@ -9,11 +9,11 @@
 
 struct message{
 	std::string text;
-	int pid;
+	unsigned int pid;
 };
 
 struct client{
-	int pid;
+	unsigned int pid;
 	std::string uname;
 	bool registered;
 	bool playing;
@@ -22,6 +22,10 @@ struct client{
 	std::queue<std::string> responses;
 };
 
+/**
+ * Class used to communicate between threads of game, server and console reader
+ * This class is fully thread-safe and threads should listen to it to check for new messages
+ */
 class CommunicationManager{
 	int cpid = 0;
 	int currentCid = 1;

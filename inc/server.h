@@ -6,6 +6,10 @@
 
 #include "CommunicationManager.h"
 
+/**
+ * Server class 
+ * Creates and manages the server
+ */
 class Server{
 	boost::asio::io_service io_service;
 	boost::asio::ip::tcp::tcp::acceptor acceptor;
@@ -16,16 +20,28 @@ class Server{
 
 	CommunicationManager *commManager;
 
+	/**
+	 * Used to manage connection with a single user
+	 */
 	void startConnection(boost::asio::ip::tcp::tcp::socket);
 
 public:
+	/**
+	 * Initializes server for running
+	 * still needs setCommandManager function
+	 */
 	Server(int port);
 
+	/**
+	 * Function that actually binds and runs the server
+	 * setCommandManager function must be called before this one
+	 */
 	void run();
 
+	/**
+	 * CommunicationManager is needed for server-game communication
+	 */
 	void setCommunicationManager(CommunicationManager*);
-
-	void send( std::string, boost::asio::ip::tcp::tcp::endpoint);
 };
 
 #endif

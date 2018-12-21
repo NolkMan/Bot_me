@@ -3,13 +3,16 @@
 
 #include "CommunicationManager.h"
 
+/**
+ * Class that is responsible for managing cin and reading the console
+ */
 class ConsoleReader {
 	CommunicationManager *comm;
 
-	enum class Command { addPlayer };
+	enum class Command { addUser };
 
 	std::map<std::string, Command> commands = { 
-			{"addplayer", Command::addPlayer} 
+			{"adduser", Command::addUser} 
 		};
 public:
 	ConsoleReader();

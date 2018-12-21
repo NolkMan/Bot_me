@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include "PlayerManager.h"
+
 ConsoleReader::ConsoleReader(){
 	comm = nullptr;
 }
@@ -29,13 +31,21 @@ void ConsoleReader::run(){
 
 		Command command = commands[args[0]];
 
-		if (command == Command::addPlayer){
+		if (command == Command::addUser){
 			if (args.size() != 3){
 				std::cerr << "To create a user username and password are needed.\n";
 				continue;
 			}
 
-			// Create user here
+			if (args[1] == "" || args[2] == ""
+			 || args[1].find(":") != std::string::npos
+			 || args[2].find(":") != std::string::npos){
+				std::cerr << "Invalid username or password\n"
+						  << "Users can not contain ':' or be empty\n";
+				continue;
+			}
+
+			PlayerManager::get().addUser(args[1], args[2]);
 		}
 
 	}

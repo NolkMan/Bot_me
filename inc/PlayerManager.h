@@ -5,8 +5,14 @@
 #include <map>
 #include <random>
 #include <exception>
+#include <thread>
+#include <mutex>
 
-/* Singleton class used to manage what users are able to connect and their credentials
+/**
+ * Singleton class used to manage what users 
+ * Who is able to connect and credentials
+ *
+ * All of public methods of this class are thread safe
  */
 class PlayerManager{
 public:
@@ -21,11 +27,20 @@ public:
 		const char* what() const noexcept { return "Bad user or login during login\n"; }
 	};
 
+	/**
+	 * returns the singleton of this class
+	 */
 	static PlayerManager& get();
 
+	/**
+	 * Adds an user to the database
+	 */
 	void addUser(std::string uname, std::string passwd);
 	
-	// returns pid or -1 when such user does not exist
+	/**
+	 * Checks the creadentials of the user
+	 * Throws an exception when fails
+	 */
 	PlayerData tryLogin(std::string name, std::string passwd);
 
 private:
@@ -33,6 +48,7 @@ private:
 	
 	// stores a hash belonging to a specific user
 	std::map<std::string, PlayerData> userHashes;
+	std::mutex databaseMutex;
 
 	std::mt19937 rng;
 

@@ -14,6 +14,7 @@ PlayerManager::PlayerManager(){
 }
 
 void PlayerManager::addUser(std::string uname, std::string passwd){
+	std::lock_guard<std::mutex> lock(databaseMutex);
 	if (userHashes.count(uname) != 0 ){
 		std::cerr << "User with that name already exists\n";
 		return;
@@ -23,15 +24,19 @@ void PlayerManager::addUser(std::string uname, std::string passwd){
 	while (isIn) { 
 		isIn = false; 
 		pid = rng();
+		pid >>= 8;
 		for( const auto& [k , pd] : userHashes)
 			if (pd.pid == pid) isIn = true;
 	}
 
 	userHashes[uname] = PlayerData(uname, passwd, pid);
 	writeUsers();
+
+	std::cerr << "User created\n";
 }
 
 PlayerManager::PlayerData PlayerManager::tryLogin(std::string uname, std::string passwd){
+	std::lock_guard<std::mutex> lock(databaseMutex);
 	if (userHashes.count(uname) == 0){
 		std::cerr << "User tried to login with name that does not exist: " << uname << "\n";
 		throw InvalidUserOrPassword();
@@ -60,7 +65,7 @@ void PlayerManager::readUsers(){
 		}
 		uname = line.substr(0,colon);
 		passwd = line.substr(colon+1, colon2 - colon - 1);
-		pid = std::stoi(line.substr(colon2+1));
+		pid = std::stoul(line.substr(colon2+1));
 
 		userHashes[uname] = PlayerData(uname, passwd, pid); 
 	}
