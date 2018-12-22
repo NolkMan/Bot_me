@@ -3,9 +3,10 @@
 
 #include <string>
 #include <queue>
+#include <map>
+#include <vector>
 #include <thread>
 #include <mutex>
-#include <map>
 
 struct message{
 	std::string text;
@@ -33,7 +34,14 @@ class CommunicationManager{
 	std::mutex maplock;
 	std::map<int, client> clients;
 public:
-	message getNextMessage();
+	/**
+	 * Returns a single message from every connected user
+	 */
+	std::vector<message> getNextMessages();
+
+	/**
+	 * Methods used for server communication
+	 */
 
 	int createNewClient();
 	void addMessage(std::string text, int cid);

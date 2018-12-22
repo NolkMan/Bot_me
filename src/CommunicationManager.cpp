@@ -4,6 +4,20 @@
 
 #include "PlayerManager.h"
 
+std::vector<message> CommunicationManager::getNextMessages(){
+	std::lock_guard<std::mutex> lock(maplock);
+	std::vector<message> messages;
+	for(auto& [cid, c] : clients){
+		if (!c.messages.empty()){
+			std::string message = c.messages.front();
+			c.messages.pop();
+			messages.push_back({message, c.pid});
+		}
+	}
+	
+	return messages;
+}
+
 int CommunicationManager::createNewClient(){
 	client c;
 	c.registered = false;
