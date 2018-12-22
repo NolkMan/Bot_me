@@ -16,6 +16,8 @@ struct message{
 struct client{
 	unsigned int pid;
 	std::string uname;
+	bool close;
+
 	bool registered;
 	bool playing;
 	int cid;
@@ -31,24 +33,56 @@ class CommunicationManager{
 	int cpid = 0;
 	int currentCid = 1;
 
+
 	std::mutex maplock;
 	std::map<int, client> clients;
+	std::map<unsigned int, int> reverseMap;
+
+	bool serverRunning = false;
 public:
+	// Data retrieval
+	// Note: after returning the data may change
+	// Use for debbugging or when data is unlikely to change
+	// Like server was closed
+	
+	bool isServerRunning();
+
+	// Game
 	/**
 	 * Returns a single message from every connected user
 	 */
 	std::vector<message> getNextMessages();
+	/**
+	 * Will send a message to specific client
+	 * \throw when pid does not map to any client
+	 */
+	void addResponse(unsigned int pid, std::string);
 
 	/**
 	 * Methods used for server communication
 	 */
 
+	// Server
+
+	void startedServer();
+	void closedServer();
+
+	// Client
+
 	int createNewClient();
+	void closedClient(int cid);
+	
+	bool shouldCloseClient(int cid);
+
 	void addMessage(std::string text, int cid);
 
 	bool isResponse(int cid);
 	std::string getResponse(int cid);
 	void popResponse(int cid);
+public:
+	struct InvalidPidException : std::exception {
+		const char* what() const noexcept { return "Invalid pid give to CommunicationManager"; }
+	};
 };
 
 #endif

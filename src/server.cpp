@@ -41,6 +41,10 @@ void Server::startConnection(tcp::socket sock){
 				commManager->popResponse(cid);
 			}
 
+			if (commManager->shouldCloseClient(cid)){
+				break;
+			}
+
 			std::this_thread::sleep_for(std::chrono::milliseconds(30));
 		}
 
@@ -48,6 +52,7 @@ void Server::startConnection(tcp::socket sock){
 		std::cerr << "[Server::startConnection] Exception while communicating with client: " << e.what() << "\n";
 	}
 
+	commManager->closedClient(cid);
 	std::cout << "cid:" << cid << ":disconnected\n";
 }
 
@@ -56,6 +61,7 @@ void Server::setCommunicationManager(CommunicationManager *cm){
 }
 
 void Server::run(){
+	commManager->startedServer();
 	try{
 		for(;;){
 			tcp::socket sock(io_service);
@@ -65,4 +71,5 @@ void Server::run(){
 	}catch(std::exception &e){
 		std::cerr << "[Server::run] Exception: " << e.what() << "\n";
 	}
+	commManager->closedServer();
 }
