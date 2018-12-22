@@ -12,7 +12,6 @@ Server::Server(int port):port(port),acceptor(io_service, tcp::endpoint(tcp::v4()
 void Server::startConnection(tcp::socket sock){
 	int cid = commManager->createNewClient();
 	try{
-		char data[max_length];
 		boost::asio::streambuf b;
 		std::istream stream(&b);
 
@@ -21,38 +20,35 @@ void Server::startConnection(tcp::socket sock){
 
 			// used to receive messages from the client
 			if (sock.available()){
-				boost::asio::read_until(sock, b, '\n');
+				boost::asio::read_until(sock, b, '\n', error);
+
 				if (error == boost::asio::error::eof){ // client disconnected
 					break;
 				}else if(error){ // other error
 					throw boost::system::system_error(error);
 				}else{
 					std::string message;
-					std::getline(stream, message);
-					commManager->addMessage(message, cid);
+					while (std::getline(stream, message))
+						commManager->addMessage(message, cid);
+					stream.clear();
 				}
 			}
 
 			//used to send messages to the client
-			if (commManager->isResponse(cid)){
-				try{
-					std::string resp = commManager->getResponse(cid);
-					boost::asio::write(sock, boost::asio::buffer(resp));
-					commManager->popResponse(cid);
-				}catch(std::exception& e){
-					std::cerr << "Error while sending a message: " << e.what() << "\n";
-				}
+			while (commManager->isResponse(cid)){
+				std::string resp = commManager->getResponse(cid);
+				boost::asio::write(sock, boost::asio::buffer(resp));
+				commManager->popResponse(cid);
 			}
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(30));
 		}
 
 	}catch (std::exception& e){
-		std::cerr << "Exception while communicating with client " << e.what() << "\n";
+		std::cerr << "[Server::startConnection] Exception while communicating with client: " << e.what() << "\n";
 	}
 
-	std::cout << "Client disconnected\n";
-	
+	std::cout << "cid:" << cid << ":disconnected\n";
 }
 
 void Server::setCommunicationManager(CommunicationManager *cm){
@@ -60,9 +56,13 @@ void Server::setCommunicationManager(CommunicationManager *cm){
 }
 
 void Server::run(){
-	for(;;){
-		tcp::socket sock(io_service);
-		acceptor.accept(sock);
-		std::thread(&Server::startConnection, this, std::move(sock)).detach();
+	try{
+		for(;;){
+			tcp::socket sock(io_service);
+			acceptor.accept(sock);
+			std::thread(&Server::startConnection, this, std::move(sock)).detach();
+		}
+	}catch(std::exception &e){
+		std::cerr << "[Server::run] Exception: " << e.what() << "\n";
 	}
 }
