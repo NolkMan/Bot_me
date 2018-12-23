@@ -1,7 +1,7 @@
 #ifndef __BOTME_INC_GAME_H
 #define __BOTME_INC_GAME_H
 
-#include "config_reader.h"
+#include "ConfigReader.h"
 #include "CommunicationManager.h"
 
 class Game{
