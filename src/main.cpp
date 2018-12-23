@@ -7,6 +7,7 @@
 
 #include "Game.h"
 #include "TestGame.h"
+#include "moon_craft/MoonCraft.h"
 
 int main(int args, char ** argv){
 	std::string configFile;
@@ -20,7 +21,7 @@ int main(int args, char ** argv){
 
 	auto *comm = new CommunicationManager();
 
-	Game *game = new TestGame(config);
+	Game *game = new MoonCraft(config);
 	game->setCommunicationManager(comm);
 
 	auto server = Server(3200);

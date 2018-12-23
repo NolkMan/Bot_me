@@ -14,7 +14,6 @@ public:
 	void setCommunicationManager(CommunicationManager*);
 
 	virtual int start() = 0;
-	virtual int end() = 0;
 private:
 };
 
