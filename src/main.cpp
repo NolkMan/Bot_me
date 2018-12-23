@@ -1,8 +1,8 @@
 #include <iostream>
 #include <thread>
 
-#include "server.h"
-#include "config_reader.h"
+#include "Server.h"
+#include "ConfigReader.h"
 #include "ConsoleReader.h"
 
 #include "Game.h"
