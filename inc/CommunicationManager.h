@@ -38,7 +38,11 @@ class CommunicationManager{
 	std::map<int, client> clients;
 	std::map<unsigned int, int> reverseMap;
 
+	bool gameRunning = false;
+	bool gameClosing = false;
+
 	bool serverRunning = false;
+	bool serverClosing = false;
 public:
 	// Data retrieval
 	// Note: after returning the data may change
@@ -46,8 +50,15 @@ public:
 	// Like server was closed
 	
 	bool isServerRunning();
+	bool isGameRunning();
 
 	// Game
+	
+	/** Game control */
+	void gameStarted();
+	bool gameShouldClose();
+	void gameClosed();
+
 	/**
 	 * Returns a single message from every connected user
 	 */
@@ -65,6 +76,7 @@ public:
 	// Server
 
 	void startedServer();
+	bool shouldCloseServer();
 	void closedServer();
 
 	// Client
@@ -72,6 +84,7 @@ public:
 	int createNewClient();
 	void closedClient(int cid);
 	
+	void closeClient(int cid);
 	bool shouldCloseClient(int cid);
 
 	void addMessage(std::string text, int cid);
