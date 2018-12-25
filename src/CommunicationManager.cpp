@@ -10,7 +10,23 @@ bool CommunicationManager::isServerRunning(){
 	return serverRunning;
 }
 
+bool CommunicationManager::isGameRunning(){
+	return gameRunning;
+}
+
 // Game
+
+void CommunicationManager::gameStarted(){
+	gameRunning = true;
+}
+
+bool CommunicationManager::gameShouldClose(){
+	return gameClosing;
+}
+
+void CommunicationManager::gameClosed(){
+	gameRunning = false;
+}
 
 std::vector<message> CommunicationManager::getNextMessages(){
 	std::lock_guard<std::mutex> lock(maplock);
@@ -43,6 +59,10 @@ void CommunicationManager::addResponse(unsigned int pid, std::string message){
 void CommunicationManager::startedServer(){
 	std::lock_guard<std::mutex> lock(maplock);
 	serverRunning = true;
+}
+
+bool CommunicationManager::shouldCloseServer(){
+	return serverClosing;
 }
 
 void CommunicationManager::closedServer(){
@@ -78,13 +98,22 @@ void CommunicationManager::closedClient(int cid){
 	clients.erase(cid);
 }
 
+void CommunicationManager::closeClient(int cid){
+	std::lock_guard<std::mutex> lock(maplock);
+	if (clients.count(cid) == 0) return;
+	clients[cid].close = true;
+}
+
 bool CommunicationManager::shouldCloseClient(int cid){
 	std::lock_guard<std::mutex> lock(maplock);
+	if (clients.count(cid) == 0) return true;
 	return clients[cid].close;
 }
 
 void CommunicationManager::addMessage(std::string text, int cid){
 	std::lock_guard<std::mutex> lock(maplock);
+
+	if (clients.count(cid) == 0 ) return;
 
 	client &c = clients[cid];
 

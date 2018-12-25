@@ -29,10 +29,8 @@ void Server::startConnection(tcp::socket sock){
 				boost::asio::read_until(sock, b, '\n', error);
 				lastCall = std::chrono::steady_clock::now();
 
-				if (error == boost::asio::error::eof){ // client disconnected
-					break;
-				}else if(error){ // other error
-					throw boost::system::system_error(error);
+				if (error == boost::asio::error::eof){ break;
+				}else if(error){ throw boost::system::system_error(error);
 				}else{
 					std::string message;
 					while (std::getline(stream, message))
