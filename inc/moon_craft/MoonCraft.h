@@ -7,7 +7,7 @@ class MoonCraft : public Game {
 public:
 	MoonCraft(config::Config config);
 
-	int start();
+	void start();
 };
 
 #endif

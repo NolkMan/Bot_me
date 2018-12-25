@@ -5,7 +5,7 @@
 MoonCraft::MoonCraft(config::Config config):Game(config){
 }
 
-int MoonCraft::start(){
+void MoonCraft::start(){
 	std::cout << "MoonCraft started!\n";
 
 

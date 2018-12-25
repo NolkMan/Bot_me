@@ -5,6 +5,7 @@
 #include "CommunicationManager.h"
 
 class Game{
+protected:
 	config::Config config;
 	CommunicationManager *commManager;
 public:
@@ -13,7 +14,7 @@ public:
 
 	void setCommunicationManager(CommunicationManager*);
 
-	virtual int start() = 0;
+	virtual void start() = 0;
 private:
 };
 
