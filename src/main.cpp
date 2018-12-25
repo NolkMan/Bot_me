@@ -4,11 +4,13 @@
 #include "Server.h"
 #include "ConfigReader.h"
 #include "ConsoleReader.h"
+#include "PlayerManager.h"
 
 #include "Game.h"
 #include "moon_craft/MoonCraft.h"
 
 int main(int args, char ** argv){
+	PlayerManager::get();
 	std::string configFile;
 	if (args == 1){
 		configFile = "default_config.conf";
