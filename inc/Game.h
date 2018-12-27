@@ -9,10 +9,8 @@ protected:
 	config::Config config;
 	CommunicationManager *commManager;
 public:
-	Game(config::Config config);
+	Game(config::Config config, CommunicationManager *);
 	virtual ~Game();
-
-	void setCommunicationManager(CommunicationManager*);
 
 	virtual void start() = 0;
 private:

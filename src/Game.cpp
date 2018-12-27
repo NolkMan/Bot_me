@@ -1,13 +1,10 @@
 #include "Game.h"
 
-Game::Game(config::Config config){
+Game::Game(config::Config config,
+		CommunicationManager *com){
 	config = config;
-}
-
-Game::~Game(){}
-
-void Game::setCommunicationManager(CommunicationManager *com){
 	commManager = com;
 }
 
+Game::~Game(){}
 

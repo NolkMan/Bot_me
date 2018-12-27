@@ -1,8 +1,10 @@
 #include "wild_west/WildWest.h"
 
 #include <iostream>
+#include <thread>
+#include <chrono>
 
-WildWest::WildWest(config::Config config):Game(config),
+WildWest::WildWest(config::Config config, CommunicationManager *com):Game(config, com),
 		gen(std::random_device()()){
 	for (int i = 0 ; i < config.wwconf.cows ; i++) {
 		cow c;
@@ -93,6 +95,7 @@ void WildWest::start(){
 
 			commManager->addResponse(pid, res);
 		}
+		std::this_thread::sleep_for( std::chrono::milliseconds(30));
 	}
 
 	commManager->gameClosed();

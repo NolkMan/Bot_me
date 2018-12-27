@@ -5,7 +5,7 @@
 
 class MoonCraft : public Game {
 public:
-	MoonCraft(config::Config config);
+	MoonCraft(config::Config config, CommunicationManager *);
 
 	void start();
 };

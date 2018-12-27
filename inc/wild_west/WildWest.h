@@ -32,7 +32,7 @@ class WildWest : public Game {
 	bool isSamePosition(playerData, cow);
 
 public:
-	WildWest(config::Config);
+	WildWest(config::Config, CommunicationManager*);
 
 	void start();
 };

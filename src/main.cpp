@@ -23,8 +23,7 @@ int main(int args, char ** argv){
 
 	auto *comm = new CommunicationManager();
 
-	Game *game = new WildWest(config);
-	game->setCommunicationManager(comm);
+	Game *game = new WildWest(config, comm);
 
 	auto server = Server(3200);
 	server.setCommunicationManager(comm);
