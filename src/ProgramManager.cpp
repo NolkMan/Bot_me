@@ -1,6 +1,9 @@
 #include "ProgramManager.h"
 
-#include "TestGame.h"
+
+#include "Game.h"
+#include "moon_craft/MoonCraft.h"
+#include "wild_west/WildWest.h"
 
 ProgramManager::ProgramManager(std::string confFile):
 		defaultConfig(config::readConfig(confFile))
@@ -17,16 +20,14 @@ void ProgramManager::createNewGame(GameName gameName, int port, config::Config c
 	int gid = currentGid; currentGid ++;
 
 	
-	Game *game = new TestGame(conf);
-	game->setCommunicationManager(comm);
+	Game *game = new WildWest(conf, comm);
 	
 	auto *server = new Server(port);
 	server->setCommunicationManager(comm);
 
 	gameData gd = { gid,
 			static_cast<unsigned int>(port),
-			false,
-			false,
+			gameName,
 			comm,
 			game,
 			server};
@@ -55,5 +56,8 @@ void ProgramManager::disconnectClient(int gid, int cid){
 void ProgramManager::closeGame(int gid){
 	if (games.count(gid) == 0) throw InvalidGidException();
 	games[gid].comm->shutdown();
+	delete games[gid].game;
+	delete games[gid].server;
+	delete games[gid].comm;
 }
 

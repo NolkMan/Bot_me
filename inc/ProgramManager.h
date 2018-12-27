@@ -23,11 +23,15 @@ public:
 	struct gameData{
 		int gid;
 		unsigned int port;
-		bool gameRunning;
-		bool serverRunning;
+		GameName gameName;
 		CommunicationManager *comm;
 		Game *game;
 		Server *server;
+		const std::string getGameString() const{
+			if (gameName == GameName::wild_west) return "Wild West";
+			if (gameName == GameName::moon_craft) return "Moon craft";
+			return "Invalid";
+		}
 	};
 private:
 	std::map<int, gameData> games;
@@ -52,7 +56,7 @@ public:
 	//* will wait untill server is closed
 	void closeGame(int gid);
 
-	struct InvalidGidException{
+	struct InvalidGidException : std::exception{
 		const char* what() const noexcept { return "Invalid gid given to ProgramManager"; }
 	};
 };
