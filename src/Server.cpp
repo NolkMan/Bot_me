@@ -17,8 +17,6 @@ void Server::startConnection(tcp::socket sock){
 		auto lastCall = std::chrono::steady_clock::now();
 		auto now = lastCall;
 
-		
-
 		boost::asio::streambuf b;
 		std::istream stream(&b);
 
@@ -83,12 +81,12 @@ void Server::run(){
 			acceptor.accept(sock, error);
 			if (!error)
 				std::thread(&Server::startConnection, this, std::move(sock)).detach();
-			else
-				throw error;
+			else if (error != boost::asio::error::try_again)
+				throw boost::system::system_error(error);
 
 			if (commManager->shouldCloseServer()) break;
 
-			std::this_thread::sleep_for(std::chrono::milliseconds(30));
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 	}catch(std::exception &e){
 		std::cerr << "[Server::run] Exception: " << e.what() << "\n";
