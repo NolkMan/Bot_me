@@ -14,6 +14,47 @@ bool CommunicationManager::isGameRunning(){
 	return gameRunning;
 }
 
+std::map<int, client> CommunicationManager::getCurrentClients(){
+	std::lock_guard<std::mutex> lock(maplock);
+	return clients;
+}
+
+void CommunicationManager::shutdown(){
+	serverClosing = true;
+	gameClosing = true;
+
+	// Waiting for game to close
+	for (;;){
+		{ std::lock_guard<std::mutex> lock(maplock);
+			if (!gameRunning)
+				break;
+		}
+		std::this_thread::sleep_for( std::chrono::milliseconds(60));
+	}
+
+	// Waiting for the acceptor of the server to close
+	for (;;){
+		{ std::lock_guard<std::mutex> lock(maplock);
+			if (!serverRunning)
+				break;
+		}
+		std::this_thread::sleep_for( std::chrono::milliseconds(60));
+	}
+
+	// Waiting for all the clients to close
+	for (;;){
+		{ std::lock_guard<std::mutex> lock(maplock);
+			if (clients.empty())
+				break;
+		}
+		std::this_thread::sleep_for( std::chrono::milliseconds(60));
+	}
+
+	// All threads started with current games were successfuly closed
+
+	std::cout << "Communication manager succesfuly closed\n";
+}
+
 // Game
 
 void CommunicationManager::gameStarted(){
@@ -75,7 +116,6 @@ void CommunicationManager::closedServer(){
 int CommunicationManager::createNewClient(){
 	client c;
 	c.registered = false;
-	c.playing = false;
 	c.pid = -1;
 	c.close = false;
 	c.cid = currentCid; currentCid ++;
@@ -106,6 +146,7 @@ void CommunicationManager::closeClient(int cid){
 
 bool CommunicationManager::shouldCloseClient(int cid){
 	std::lock_guard<std::mutex> lock(maplock);
+	if (shouldCloseServer()) return true;
 	if (clients.count(cid) == 0) return true;
 	return clients[cid].close;
 }
