@@ -90,9 +90,11 @@ void CommunicationManager::addResponse(unsigned int pid, std::string message){
 		return;
 	}
 
+	message += "\n";
+
 	unsigned int cid = reverseMap[pid];
 
-	clients[pid].responses.push(message);
+	clients[cid].responses.push(message);
 }
 
 // Server
