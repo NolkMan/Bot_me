@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(inc)
 
-file(GLOB SOURCES "src/*.cpp")
+file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 find_package(Threads)
 find_package( Boost 1.62 COMPONENTS system REQUIRED )

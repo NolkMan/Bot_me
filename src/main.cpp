@@ -7,7 +7,8 @@
 #include "PlayerManager.h"
 
 #include "Game.h"
-#include "TestGame.h"
+#include "moon_craft/MoonCraft.h"
+#include "wild_west/WildWest.h"
 
 int main(int args, char ** argv){
 	PlayerManager::get();
@@ -22,8 +23,7 @@ int main(int args, char ** argv){
 
 	auto *comm = new CommunicationManager();
 
-	Game *game = new TestGame(config);
-	game->setCommunicationManager(comm);
+	Game *game = new WildWest(config, comm);
 
 	auto server = Server(3200);
 	server.setCommunicationManager(comm);
