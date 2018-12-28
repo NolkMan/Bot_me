@@ -75,7 +75,7 @@ void WildWest::start(){
 				if (com[0] == 'm'){
 					try{
 						unsigned int id = std::stoul(com.substr(2));
-						if (cows[id].timeToMilk == 0 &&
+						if (cows.count(id) == 1 && cows[id].timeToMilk == 0 &&
 								isSamePosition(cows[id].x, players[pid].x)){
 							cows[id].timeToMilk = config.wwconf.milking;
 							players[pid].milked = true;
@@ -85,7 +85,7 @@ void WildWest::start(){
 				if (com[0] == 't'){
 					try{
 						unsigned int id = std::stoul(com.substr(2));
-						if (isSamePosition(cows[id].x , players[pid].x)){
+						if (cows.count(id) == 1 && isSamePosition(cows[id].x , players[pid].x)){
 							players[pid].holding = true;
 							players[pid].cow = id;
 						}
@@ -95,7 +95,7 @@ void WildWest::start(){
 					players[pid].holding = false;
 				}
 			}
-			else if (com.size() >= 2){
+			if (com.size() >= 2){
 				int dim = com[0] - '0';
 				int dist = 0;
 				if (com[1] == '+') dist = 1;
