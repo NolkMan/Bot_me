@@ -17,6 +17,9 @@ namespace config {
 			if (prefix == "DIM"){
 				conf.wwconf.mapsize = std::stoi(value);
 			}
+			if (prefix == "SELL"){
+				conf.wwconf.sellpoints = std::stoi(value);
+			}
 		}
 
 		void writeGenSetting(std::string prefix, std::string value, Config& conf){
