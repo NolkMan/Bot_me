@@ -11,8 +11,9 @@
 class WildWest : public Game {
 	struct playerData{
 		std::vector<int> x;
-		unsigned int holding;
-		unsigned int milked;
+		bool holding;
+		unsigned int cow;
+		bool milked;
 		unsigned int score;
 	};
 	struct cow{
@@ -20,16 +21,21 @@ class WildWest : public Game {
 		int timeToMilk;
 		unsigned int id;
 	};
+	struct sellpoint{
+		std::vector<int> x;
+	};
 
 	std::map<unsigned int, playerData> players;
-	std::vector<cow> cows;
+	std::map<unsigned int, cow> cows;
+	std::vector<sellpoint> points;
 
 	std::mt19937 gen;
 
 	std::vector<int> randomPosition();
 	playerData newPlayer();
 
-	bool isSamePosition(playerData, cow);
+	bool isSamePosition(const std::vector<int>&, const std::vector<int>&);
+	bool isSellPointAt(const std::vector<int>&);
 
 public:
 	WildWest(config::Config, CommunicationManager*);

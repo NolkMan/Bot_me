@@ -13,6 +13,7 @@ namespace config {
 			int cows = 20, milking = 20;
 			int mapsize = 20;
 			int dimension = 2;
+			int sellpoints = 30;
 		}wwconf;
 
 	};
