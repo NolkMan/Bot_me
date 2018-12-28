@@ -1,23 +1,29 @@
 #ifndef __BOTME_INC_CONSOLEREADER_H
 #define __BOTME_INC_CONSOLEREADER_H
 
-#include "CommunicationManager.h"
+#include "ProgramManager.h"
 
 /**
  * Class that is responsible for managing cin and reading the console
  */
 class ConsoleReader {
-	CommunicationManager *comm;
+	ProgramManager *progManager;
 
-	enum class Command { addUser };
+	enum class Command { addUser, quit, showGames, showClients,
+						 setGame, dropClient};
 
 	std::map<std::string, Command> commands = { 
-			{"adduser", Command::addUser} 
+			{"adduser", Command::addUser}, // adduser <uname> <passwd>
+			{"quit", Command::quit}, //quit
+			{"showgames", Command::showGames}, //showgames
+			{"showclients", Command::showClients}, //showclients
+			{"setgame", Command::setGame}, //setgame <int>
+			{"dropclient", Command::dropClient}, //dropclient int
 		};
-public:
-	ConsoleReader();
 	
-	void setCommunicationManager(CommunicationManager *);
+	int currentGid = 0;
+public:
+	ConsoleReader(ProgramManager *);
 
 	void run();
 };

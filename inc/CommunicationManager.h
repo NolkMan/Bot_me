@@ -19,7 +19,6 @@ struct client{
 	bool close;
 
 	bool registered;
-	bool playing;
 	int cid;
 	std::queue<std::string> messages;
 	std::queue<std::string> responses;
@@ -43,14 +42,19 @@ class CommunicationManager{
 
 	bool serverRunning = false;
 	bool serverClosing = false;
+
 public:
-	// Data retrieval
-	// Note: after returning the data may change
-	// Use for debbugging or when data is unlikely to change
-	// Like server was closed
+
+	// Data inspection
+	// Note: it may change after returning
 	
 	bool isServerRunning();
 	bool isGameRunning();
+
+	std::map<int,client> getCurrentClients();
+
+	// Blocks thread until all associeated threads are closed
+	void shutdown();
 
 	// Game
 	

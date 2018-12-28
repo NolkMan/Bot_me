@@ -5,12 +5,7 @@
 
 #include "PlayerManager.h"
 
-ConsoleReader::ConsoleReader(){
-	comm = nullptr;
-}
-
-void ConsoleReader::setCommunicationManager(CommunicationManager *manager){
-	comm = manager;
+ConsoleReader::ConsoleReader(ProgramManager *pm):progManager(pm){
 }
 
 void ConsoleReader::run(){
@@ -47,9 +42,54 @@ void ConsoleReader::run(){
 
 			PlayerManager::get().addUser(args[1], args[2]);
 		}
+		if (command == Command::quit){
+			auto data = progManager->getRunningGames();
+			for (const auto& [key, gd] : data){
+				progManager->closeGame(gd.gid);
+			}
 
+			break;
+		}
+		if (command == Command::showGames){
+			auto data = progManager->getRunningGames();
+			for( const auto& [key, gd] : data){
+				std::cout << gd.getGameString() << ":" << gd.gid << ":" << gd.port <<"\n";
+			}
+		}
+		if (command == Command::showClients){
+			try{
+				auto data = progManager->getClientsInGame( currentGid );
+				for (const auto& [key, cd] : data){
+					std::cout << cd.cid << ":" << cd.pid << ":" << cd.uname << ":" << cd.registered << "\n";
+				}
+			}catch(std::exception &e){
+				std::cout << e.what() << "\n";
+			}
+		}
+		if (command == Command::setGame){
+			try{
+				if (args.size() < 2){
+					std::cout << "You need to specify what game you want to switch to\n";
+					continue;
+				}
+				int newGid = std::stoi(args[1]);
+				currentGid = newGid;
+			}catch(std::exception &e){
+				std::cout << e.what() << "\n";
+			}
+		}
+		if (command == Command::dropClient){
+			if (args.size() < 2){
+				std::cout << "You need to specify client\n";
+				continue;
+			}
+			try{
+				int cid = std::stoi( args[1] );
+				progManager->disconnectClient(currentGid, cid);
+			}catch(std::exception &e){
+				std::cout << e.what() << "\n";
+			}
+		}
 	}
 }
-
-
 

@@ -7,6 +7,7 @@
 using boost::asio::ip::tcp;
 
 Server::Server(int port):port(port),acceptor(io_service, tcp::endpoint(tcp::v4(), port)){
+	acceptor.non_blocking(true);
 }
 
 void Server::startConnection(tcp::socket sock){
@@ -15,8 +16,6 @@ void Server::startConnection(tcp::socket sock){
 		//time out mechanism
 		auto lastCall = std::chrono::steady_clock::now();
 		auto now = lastCall;
-
-
 
 		boost::asio::streambuf b;
 		std::istream stream(&b);
@@ -75,11 +74,19 @@ void Server::setCommunicationManager(CommunicationManager *cm){
 
 void Server::run(){
 	commManager->startedServer();
+	boost::system::error_code error;
 	try{
 		for(;;){
 			tcp::socket sock(io_service);
-			acceptor.accept(sock);
-			std::thread(&Server::startConnection, this, std::move(sock)).detach();
+			acceptor.accept(sock, error);
+			if (!error)
+				std::thread(&Server::startConnection, this, std::move(sock)).detach();
+			else if (error != boost::asio::error::try_again)
+				throw boost::system::system_error(error);
+
+			if (commManager->shouldCloseServer()) break;
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 	}catch(std::exception &e){
 		std::cerr << "[Server::run] Exception: " << e.what() << "\n";
